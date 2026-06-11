@@ -4,6 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Gagandeep Singh — Marketing &amp; Business Development Executive in Dubai. 2+ years across influencer campaigns, celebrity talent, and government activations. Master of AI in Business @ SP Jain." />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://gagandeep-portfolio.vercel.app/" />
+  <meta property="og:title" content="Gagandeep Singh — Marketing &amp; Business Development | Dubai" />
+  <meta property="og:description" content="Gagandeep Singh — Marketing &amp; Business Development Executive in Dubai. 2+ years across influencer campaigns, celebrity talent, and government activations." />
+  <meta property="og:image" content="https://gagandeep-portfolio.vercel.app/profile.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://gagandeep-portfolio.vercel.app/" />
+  <meta property="twitter:title" content="Gagandeep Singh — Marketing &amp; Business Development | Dubai" />
+  <meta property="twitter:description" content="Gagandeep Singh — Marketing &amp; Business Development Executive in Dubai. 2+ years across influencer campaigns, celebrity talent, and government activations." />
+  <meta property="twitter:image" content="https://gagandeep-portfolio.vercel.app/profile.png" />
+
+  <!-- Google tag (gtag.js) Placeholder -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
   <title>Gagandeep Singh — Marketing &amp; Business Development | Dubai</title>
 
   <!-- Favicon (inline, self-contained) -->
@@ -61,6 +85,105 @@
     a { color: inherit; text-decoration: none; }
     ul { list-style: none; }
     img { max-width: 100%; display: block; }
+
+    /* ============================================================
+       0.5 PRELOADER & NEW COMPONENTS
+    ============================================================ */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+    }
+    #preloader.done {
+      transform: translateY(-100%);
+    }
+    .loader-logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 2rem;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      opacity: 0;
+      animation: pulse-in 1s forwards;
+    }
+    .loader-logo .dot { color: var(--accent); }
+    .loader-bar {
+      width: 120px;
+      height: 2px;
+      background: var(--line);
+      margin-top: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+    .loader-progress {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 0%;
+      background: var(--accent);
+      animation: fill-bar 1.5s ease-out forwards;
+      animation-delay: 0.2s;
+    }
+    @keyframes pulse-in {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fill-bar {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    .profile-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 1.5rem;
+      object-fit: cover;
+      border: 2px solid var(--line);
+      padding: 4px;
+      background: var(--bg);
+      position: relative;
+      z-index: 10;
+      animation: float-avatar 6s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(0, 133, 255, 0.15);
+      transition: border-color 0.4s, box-shadow 0.4s;
+    }
+    .profile-photo:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 40px rgba(0, 133, 255, 0.4);
+    }
+    @keyframes float-avatar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .typed-word {
+      position: relative;
+      color: var(--accent-bright);
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    .typed-word::after {
+      content: "";
+      position: absolute;
+      right: -6px;
+      top: 10%;
+      bottom: 10%;
+      width: 3px;
+      background: var(--accent-bright);
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
 
     /* ============================================================
        1. GRAIN OVERLAY
@@ -955,6 +1078,12 @@
 </head>
 <body>
 
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="loader-logo">GS<span class="dot">.</span></div>
+    <div class="loader-bar"><div class="loader-progress"></div></div>
+  </div>
+
   <!-- Film grain overlay -->
   <div class="grain" aria-hidden="true"></div>
 
@@ -993,11 +1122,13 @@
       <div class="hero-orb" aria-hidden="true"></div>
       <div class="hero-grid" aria-hidden="true"></div>
       <div class="wrap">
+        <img src="profile.png" alt="Gagandeep Singh" class="profile-photo reveal" />
         <p class="hero-kicker reveal"><strong>Gagandeep Singh</strong> · Marketing &amp; Business Development · Dubai, UAE</p>
-        <h1 class="reveal">I make brands<br />impossible to <em>ignore</em>.</h1>
+        <h1 class="reveal">I make brands<br />impossible to <span class="typed-word">ignore</span>.</h1>
         <p class="lede reveal">2+ years building influencer campaigns, celebrity collaborations, and government activations seen by millions — now supercharged with a Master&rsquo;s in AI in Business at S P Jain, Dubai.</p>
         <div class="cta-row reveal">
           <a href="#explore" class="btn btn-primary">See my campaigns</a>
+          <a href="Gagandeep_Singh_Resume.pdf" download class="btn btn-ghost">Download CV</a>
           <a href="mailto:singhgagan1612@gmail.com" class="btn btn-ghost">Get in touch</a>
         </div>
       </div>
@@ -1206,6 +1337,17 @@
             </div>
             <span class="contact-arrow">→</span>
           </a>
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/gagandeep-singh-ba45911ba/" target="_blank" rel="noopener" class="contact-card reveal" id="contact-linkedin">
+            <div class="contact-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            <div class="contact-info">
+              <h4>LinkedIn</h4>
+              <p>in/gagandeep-singh</p>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
           <!-- GitHub -->
           <a href="https://github.com/gagu00000" target="_blank" rel="noopener" class="contact-card reveal" id="contact-github">
             <div class="contact-icon">
@@ -1231,7 +1373,7 @@
         </div>
         <footer class="site-footer reveal">
           <span>© <span id="year">2026</span> Gagandeep Singh · Dubai, UAE</span>
-          <span><a href="mailto:singhgagan1612@gmail.com">singhgagan1612@gmail.com</a> · <a href="https://github.com/gagu00000" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.instagram.com/gomziee_" target="_blank" rel="noopener">Instagram</a></span>
+          <span><a href="mailto:singhgagan1612@gmail.com">Email</a> · <a href="https://www.linkedin.com/in/gagandeep-singh-ba45911ba/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/gagu00000" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.instagram.com/gomziee_" target="_blank" rel="noopener">Instagram</a></span>
         </footer>
       </div>
     </section>
@@ -1245,6 +1387,51 @@
       // ?static=1 renders the page without JS-driven motion (debugging / screenshots)
       var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
         /[?&]static=1/.test(location.search);
+
+      /* ---------- Preloader ---------- */
+      window.addEventListener("load", function() {
+        setTimeout(function() {
+          var preloader = document.getElementById("preloader");
+          if (preloader) preloader.classList.add("done");
+        }, 1800);
+      });
+
+      /* ---------- Typing Animation ---------- */
+      var words = ["ignore", "forget", "skip", "overlook"];
+      var wordIdx = 0;
+      var typedSpan = document.querySelector(".typed-word");
+      if (typedSpan && !reducedMotion) {
+        var isDeleting = false;
+        var currentText = "ignore";
+        var typeSpeed = 100;
+        
+        function type() {
+          var fullWord = words[wordIdx];
+          
+          if (isDeleting) {
+            currentText = fullWord.substring(0, currentText.length - 1);
+            typeSpeed = 50;
+          } else {
+            currentText = fullWord.substring(0, currentText.length + 1);
+            typeSpeed = 150;
+          }
+          
+          typedSpan.textContent = currentText;
+          
+          if (!isDeleting && currentText === fullWord) {
+            typeSpeed = 2000;
+            isDeleting = true;
+          } else if (isDeleting && currentText === "") {
+            isDeleting = false;
+            wordIdx = (wordIdx + 1) % words.length;
+            typeSpeed = 500;
+          }
+          
+          setTimeout(type, typeSpeed);
+        }
+        
+        setTimeout(type, 3000);
+      }
 
       /* ---------- Active chapter nav ---------- */
       var sections = document.querySelectorAll(".chapter");
