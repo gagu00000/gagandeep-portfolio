@@ -715,60 +715,79 @@
     }
 
     /* ============================================================
-       11. CHAPTER 06 — ABOUT (team grid)
+       11. CHAPTER 06 — CONTACT (contact grid)
     ============================================================ */
-    .team-grid {
+    .contact-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 1.2rem;
       margin-top: 2.5rem;
     }
 
-    .member {
+    .contact-card {
+      position: relative;
       background: var(--bg-raised);
       border: 1px solid var(--line);
       border-radius: 18px;
-      padding: 1.6rem 1.4rem;
-      text-align: center;
+      padding: 1.8rem 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 1.3rem;
       transition: transform 0.45s var(--ease-out), border-color 0.45s, box-shadow 0.45s;
+      text-decoration: none;
+      color: var(--text);
+      overflow: hidden;
     }
-    .member:hover {
-      transform: translateY(-6px);
+    .contact-card:hover {
+      transform: translateY(-5px);
       border-color: rgba(0, 133, 255, 0.5);
       box-shadow: 0 16px 44px rgba(0, 0, 0, 0.5), 0 0 36px rgba(0, 133, 255, 0.1);
     }
+    .contact-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 133, 255, 0.1), transparent 65%);
+      opacity: 0;
+      transition: opacity 0.45s;
+      pointer-events: none;
+    }
+    .contact-card:hover::before { opacity: 1; }
 
-    .avatar {
-      width: 84px; height: 84px;
-      margin: 0 auto 1.1rem;
-      border-radius: 50%;
+    .contact-icon {
+      width: 56px; height: 56px;
+      flex-shrink: 0;
+      border-radius: 14px;
       display: grid;
       place-items: center;
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 1.5rem;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-    }
-    .avatar.g1 { background: linear-gradient(135deg, #0085ff, #003e78); }
-    .avatar.g2 { background: linear-gradient(135deg, #2f6bff, #0e1f54); }
-    .avatar.g3 { background: linear-gradient(135deg, #00a3ff, #14366b); }
-    .avatar.g4 { background: linear-gradient(135deg, #4d6bff, #101c4a); }
-
-    .member h4 { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; }
-    .member .role { color: var(--text-dim); font-size: 0.82rem; margin: 0.25rem 0 0.9rem; }
-
-    .ex-tag {
-      display: inline-block;
-      font-size: 0.66rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
       color: var(--accent-bright);
       background: var(--accent-soft);
       border: 1px solid rgba(0, 133, 255, 0.35);
-      border-radius: 999px;
-      padding: 0.4em 1em;
+      transition: background 0.35s, box-shadow 0.35s;
+    }
+    .contact-card:hover .contact-icon {
+      background: rgba(0, 133, 255, 0.22);
+      box-shadow: 0 0 20px rgba(0, 133, 255, 0.3);
+    }
+
+    .contact-info h4 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.2rem;
+    }
+    .contact-info p {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+    .contact-arrow {
+      margin-left: auto;
+      color: var(--text-dim);
+      transition: color 0.35s, transform 0.35s var(--ease-out);
+    }
+    .contact-card:hover .contact-arrow {
+      color: var(--accent-bright);
+      transform: translateX(4px);
     }
 
     .site-footer {
@@ -896,7 +915,6 @@
     ============================================================ */
     @media (max-width: 1024px) {
       .card-grid { grid-template-columns: repeat(2, 1fr); }
-      .team-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 860px) {
@@ -912,9 +930,8 @@
 
     @media (max-width: 600px) {
       .card-grid { grid-template-columns: 1fr; }
-      .team-grid { grid-template-columns: 1fr 1fr; gap: 0.9rem; }
-      .member { padding: 1.3rem 0.9rem; }
-      .avatar { width: 64px; height: 64px; font-size: 1.15rem; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .contact-card { padding: 1.4rem 1.2rem; }
       .stat-grid { gap: 0.8rem; }
       .stat-card { padding: 1.3rem 1.1rem; }
       .badge { margin-left: 0; }
@@ -1160,45 +1177,61 @@
       </div>
     </section>
 
-    <!-- ════════════════ 06 · ABOUT ════════════════ -->
+    <!-- ════════════════ 06 · CONTACT ════════════════ -->
     <section id="about" class="chapter">
       <div class="wrap">
         <span class="chapter-tag reveal">06 · Contact</span>
         <h2 class="reveal">Let&rsquo;s make your brand <em>unmissable</em>.</h2>
-        <p class="lede reveal">Open to marketing, brand, and AI-strategy roles in Dubai and beyond. The snapshot — then let&rsquo;s talk.</p>
-        <div class="team-grid">
-          <article class="member reveal">
-            <div class="avatar g1">GS</div>
-            <h4>Gagandeep Singh</h4>
-            <p class="role">Marketing &amp; BD Executive</p>
-            <span class="ex-tag">Dubai, UAE</span>
-          </article>
-          <article class="member reveal">
-            <div class="avatar g2">AI</div>
-            <h4>S P Jain School of Global Management</h4>
-            <p class="role">Master of AI in Business</p>
-            <span class="ex-tag">2025 – 2027</span>
-          </article>
-          <article class="member reveal">
-            <div class="avatar g3">BE</div>
-            <h4>Mumbai University</h4>
-            <p class="role">B.E. Mechanical Engineering</p>
-            <span class="ex-tag">2018 – 2022</span>
-          </article>
-          <article class="member reveal">
-            <div class="avatar g4">Aa</div>
-            <h4>Languages</h4>
-            <p class="role">English · Hindi · Punjabi</p>
-            <span class="ex-tag">Trilingual</span>
-          </article>
-        </div>
-        <div class="cta-row cta-row--left reveal">
-          <a href="mailto:singhgagan1612@gmail.com" class="btn btn-primary">Email me</a>
-          <a href="tel:+971508034862" class="btn btn-ghost">+971 50 803 4862</a>
+        <p class="lede reveal">Open to marketing, brand, and AI-strategy roles in Dubai and beyond. Reach out — let&rsquo;s talk.</p>
+        <div class="contact-grid">
+          <!-- Email -->
+          <a href="mailto:singhgagan1612@gmail.com" class="contact-card reveal" id="contact-email">
+            <div class="contact-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <div class="contact-info">
+              <h4>Email</h4>
+              <p>singhgagan1612@gmail.com</p>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
+          <!-- Phone -->
+          <a href="tel:+971508034862" class="contact-card reveal" id="contact-phone">
+            <div class="contact-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="contact-info">
+              <h4>Phone</h4>
+              <p>+971 50 803 4862</p>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
+          <!-- GitHub -->
+          <a href="https://github.com/gagu00000" target="_blank" rel="noopener" class="contact-card reveal" id="contact-github">
+            <div class="contact-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </div>
+            <div class="contact-info">
+              <h4>GitHub</h4>
+              <p>github.com/gagu00000</p>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/gomziee_" target="_blank" rel="noopener" class="contact-card reveal" id="contact-instagram">
+            <div class="contact-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </div>
+            <div class="contact-info">
+              <h4>Instagram</h4>
+              <p>@gomziee_</p>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
         </div>
         <footer class="site-footer reveal">
           <span>© <span id="year">2026</span> Gagandeep Singh · Dubai, UAE</span>
-          <span><a href="mailto:singhgagan1612@gmail.com">singhgagan1612@gmail.com</a> · +91 99604 59308</span>
+          <span><a href="mailto:singhgagan1612@gmail.com">singhgagan1612@gmail.com</a> · <a href="https://github.com/gagu00000" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.instagram.com/gomziee_" target="_blank" rel="noopener">Instagram</a></span>
         </footer>
       </div>
     </section>
@@ -1316,7 +1349,7 @@
       }
 
       /* ---------- Card spotlight (mouse-follow glow) ---------- */
-      document.querySelectorAll(".card").forEach(function (card) {
+      document.querySelectorAll(".card, .contact-card").forEach(function (card) {
         card.addEventListener("mousemove", function (e) {
           var rect = card.getBoundingClientRect();
           card.style.setProperty("--mx", (e.clientX - rect.left) + "px");
