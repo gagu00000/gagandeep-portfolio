@@ -423,6 +423,17 @@
       align-items: center;
       position: relative;
       overflow: hidden;
+      z-index: 1;
+    }
+
+    .strands-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.45; /* Slightly less opaque to not overpower the text */
     }
 
     .wrap {
@@ -508,6 +519,8 @@
     #welcome {
       justify-content: center;
       text-align: center;
+      background-color: var(--bg);
+      z-index: 2; /* ensure it completely covers the fixed strands background */
     }
 
     #welcome .wrap {
@@ -2042,6 +2055,9 @@
     </div>
   </div>
 
+  <!-- Global fixed strands background for chapters 2-6 -->
+  <div class="strands-bg" id="site-strands"></div>
+
   <!-- Film grain overlay -->
   <div class="grain" aria-hidden="true"></div>
 
@@ -3234,6 +3250,34 @@ void main() {
       }).observe(host);
 
       window.__ferro = { start, stop }; // debug hook
+    })();
+  </script>
+
+  <script type="module">
+    import initStrands from './strands.js';
+
+    (async () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (/[?&]static=1/.test(location.search)) return;
+      
+      const host = document.getElementById("site-strands");
+      if (!host) return;
+
+      const strands = await initStrands(host, {
+        colors: ["#0085ff", "#4db2ff", "#19c8ff", "#5d7bff"],
+        count: 4, /* slightly more strands for the main site */
+        speed: 0.5,
+        amplitude: 1.2,
+        waviness: 0.8,
+        thickness: 0.6,
+        glow: 2.2,
+        taper: 3,
+        spread: 1,
+        intensity: 0.5,
+        scale: 1.5
+      });
+
+      if (!strands) return;
     })();
   </script>
 </body>
