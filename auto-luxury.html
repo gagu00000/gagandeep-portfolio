@@ -148,6 +148,17 @@
     .wrap { max-width: 1100px; margin-inline: auto; padding: 0 2.5rem; }
 
     .case-hero { position: relative; padding: 10rem 0 3.5rem; overflow: hidden; }
+
+    .strands-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
     .hero-glow {
       position: absolute; top: -45%; left: 50%; transform: translateX(-50%);
       width: 760px; height: 660px; border-radius: 50%; pointer-events: none;
@@ -270,6 +281,7 @@
 
   <main>
     <section class="case-hero">
+      <div class="strands-bg" id="hero-strands"></div>
       <div class="hero-glow" aria-hidden="true"></div>
       <div class="case-char" aria-hidden="true">
         <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
@@ -373,6 +385,33 @@
         obs.observe(el);
       });
       document.getElementById("year").textContent = new Date().getFullYear();
+    })();
+  </script>
+
+  <script type="module">
+    import initStrands from './strands.js';
+
+    (async () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (/[?&]static=1/.test(location.search)) return;
+      const host = document.getElementById("hero-strands");
+      if (!host) return;
+
+      const strands = await initStrands(host, {
+        colors: ["#0085ff", "#4db2ff", "#19c8ff", "#5d7bff"],
+        count: 3,
+        speed: 0.5,
+        amplitude: 1.2,
+        waviness: 0.8,
+        thickness: 0.6,
+        glow: 2.2,
+        taper: 3,
+        spread: 1,
+        intensity: 0.5,
+        scale: 1.5
+      });
+      
+      if (!strands) return;
     })();
   </script>
 </body>
