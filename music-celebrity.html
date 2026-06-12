@@ -579,9 +579,7 @@
       <div class="wrap">
         <span class="chapter-tag reveal">CP.02 · Case study</span>
         <h1 class="reveal">Music &amp; <em>celebrity</em>.</h1>
-        <p class="lede reveal">Talent campaigns for DCA Talent Music (Dharma Cornerstone Agency) — YouTube launches and
-          brand collaborations for artists including Shruti Sinha Neeti Mohan, Anuv Jain, and Vidya Vox, with talent
-          appearances on Bigg Boss 17.</p>
+        <p class="lede reveal">Managed brands and campaigns for celebrities like Shruti Sinha, Vivek Dahiya, and Shanvi Srivastava, alongside artist campaigns for singers including Neeti Mohan, Nikhita Gandhi, and many more.</p>
         <div class="tag-row reveal"><span>Music</span><span>YouTube</span><span>Talent</span><span>Instagram</span>
         </div>
       </div>
@@ -636,13 +634,21 @@
 
   <script>
     (function () {
-      /* ---------- Preloader ---------- */
-      window.addEventListener("load", function () {
-        setTimeout(function () {
-          var preloader = document.getElementById("preloader");
-          if (preloader) preloader.classList.add("done");
-        }, 1200);
-      });
+      /* ---------- Preloader (skipped after first visit this session) ---------- */
+      var preloaderEl = document.getElementById("preloader");
+      var preloaderSeen = false;
+      try { preloaderSeen = !!sessionStorage.getItem("gs-preloaded"); } catch (e) { }
+      if (preloaderEl && preloaderSeen) {
+        preloaderEl.style.transition = "none";
+        preloaderEl.classList.add("done");
+      } else if (preloaderEl) {
+        window.addEventListener("load", function () {
+          setTimeout(function () {
+            preloaderEl.classList.add("done");
+            try { sessionStorage.setItem("gs-preloaded", "1"); } catch (e) { }
+          }, 1200);
+        });
+      }
 
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {

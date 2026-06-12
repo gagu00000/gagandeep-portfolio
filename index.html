@@ -929,6 +929,76 @@
     }
 
     /* ============================================================
+       8b. CHAPTER 05 — AI LAB (project grid)
+    ============================================================ */
+    .ai-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-top: 2.5rem;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+    }
+
+    .badge.live {
+      color: #6ee7a8;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .badge.live::before {
+      content: "●";
+      margin-right: 0.45em;
+      font-size: 0.8em;
+      animation: live-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes live-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .card--soon { cursor: default; }
+    .card--soon .card-link { color: var(--text-dim); }
+
+    .ai-github {
+      margin-top: 1.6rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .ai-github a { color: var(--accent-bright); font-weight: 600; }
+    .ai-github a:hover { text-decoration: underline; }
+
+    @media (max-width: 860px) {
+      .ai-grid { grid-template-columns: 1fr; }
+    }
+
+    /* availability pill (hero) */
+    .avail-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #6ee7a8;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      border-radius: 999px;
+      padding: 0.45em 1.1em;
+      margin-bottom: 1.3rem;
+    }
+    .avail-pill::before {
+      content: "●";
+      font-size: 0.75em;
+      animation: live-pulse 1.8s ease-in-out infinite;
+    }
+
+    /* ============================================================
        9. CHAPTER 04   BUILD (bullets / code block)
     ============================================================ */
     .build-list {
@@ -2076,14 +2146,16 @@
         class="nav-num">01</span></a>
     <a href="#learn"><span class="nav-label">Profile</span><span class="nav-line"></span><span
         class="nav-num">02</span></a>
-    <a href="#explore"><span class="nav-label">Campaigns</span><span class="nav-line"></span><span
+    <a href="#ailab"><span class="nav-label">AI Lab</span><span class="nav-line"></span><span
         class="nav-num">03</span></a>
-    <a href="#build"><span class="nav-label">Toolkit</span><span class="nav-line"></span><span
+    <a href="#explore"><span class="nav-label">Campaigns</span><span class="nav-line"></span><span
         class="nav-num">04</span></a>
-    <a href="#roadmap"><span class="nav-label">Journey</span><span class="nav-line"></span><span
+    <a href="#build"><span class="nav-label">Toolkit</span><span class="nav-line"></span><span
         class="nav-num">05</span></a>
-    <a href="#about"><span class="nav-label">Contact</span><span class="nav-line"></span><span
+    <a href="#roadmap"><span class="nav-label">Journey</span><span class="nav-line"></span><span
         class="nav-num">06</span></a>
+    <a href="#about"><span class="nav-label">Contact</span><span class="nav-line"></span><span
+        class="nav-num">07</span></a>
   </nav>
 
   <!-- Chapter transition badge (bottom-left, DeSo style) -->
@@ -2110,9 +2182,10 @@
       <div class="hero-grid" aria-hidden="true"></div>
       <div class="wrap">
         <button class="story-ring reveal" id="storyOpen" aria-haspopup="dialog" aria-label="Watch my story">
-          <span class="ring-wrap"><img src="profile.png" alt="Gagandeep Singh" class="profile-photo" /></span>
+          <span class="ring-wrap"><img src="profile.webp" alt="Gagandeep Singh" class="profile-photo" /></span>
           <span class="story-label">▶ Watch my story</span>
         </button>
+        <p class="avail-pill reveal">Open to roles · Dubai, UAE</p>
         <p class="hero-kicker reveal"><strong>Gagandeep Singh</strong> · Marketing &amp; Business Development · Dubai,
           UAE</p>
         <h1 class="reveal">I make brands<br />impossible to <span class="typed-word">ignore.</span></h1>
@@ -2167,10 +2240,71 @@
       </div>
     </section>
 
-    <!-- ════════════════ 03 · EXPLORE ════════════════ -->
+    <!-- ════════════════ 03 · AI LAB ════════════════ -->
+    <section id="ailab" class="chapter">
+      <div class="wrap">
+        <span class="chapter-tag reveal">03 · AI Lab</span>
+        <h2 class="reveal">I don&rsquo;t just use AI.<br />I <em>build</em> it.</h2>
+        <p class="lede reveal">Live products from the AI master&rsquo;s and beyond — machine learning, multi-agent
+          systems, and recruiting automation. Don&rsquo;t take my word for it: launch them.</p>
+        <div class="ai-grid">
+          <article class="card reveal">
+            <div class="card-head">
+              <span class="card-num">AI.01</span>
+              <span class="badge live">Live</span>
+            </div>
+            <h3>Churn Analytics Dashboard</h3>
+            <p>Bank-churn prediction running multiple ML algorithms on a live Render backend — compare models, explore
+              churn drivers, and score customer risk in real time.</p>
+            <div class="card-tags"><span>Machine Learning</span><span>Python</span><span>Render</span></div>
+            <a class="card-link" href="https://bank-churn-prediction-dashboardv1.vercel.app/" target="_blank"
+              rel="noopener">Launch the app <span class="arrow">→</span></a>
+          </article>
+          <article class="card reveal">
+            <div class="card-head">
+              <span class="card-num">AI.02</span>
+              <span class="badge live">Live</span>
+            </div>
+            <h3>Multi-Agent Disaster Response</h3>
+            <p>Autonomous AI agents that triage incidents, allocate resources, and coordinate a disaster response plan
+              — working together, in real time.</p>
+            <div class="card-tags"><span>Multi-agent</span><span>AI</span><span>Streamlit</span></div>
+            <a class="card-link" href="https://disaster-response-system-rdmu.streamlit.app/" target="_blank"
+              rel="noopener">Launch the app <span class="arrow">→</span></a>
+          </article>
+          <article class="card reveal">
+            <div class="card-head">
+              <span class="card-num">AI.03</span>
+              <span class="badge live">Live</span>
+            </div>
+            <h3>UAE Pulse</h3>
+            <p>An intelligent dashboard for malls and supermarkets — AI and algorithms turn footfall and sales data
+              into staffing, stocking, and promotion decisions.</p>
+            <div class="card-tags"><span>Retail AI</span><span>Analytics</span><span>Streamlit</span></div>
+            <a class="card-link" href="https://ip-group-project-v3-alehxpigcwfp7xeqhcpj6e.streamlit.app/"
+              target="_blank" rel="noopener">Launch the app <span class="arrow">→</span></a>
+          </article>
+          <article class="card card--soon reveal">
+            <div class="card-head">
+              <span class="card-num">AI.04</span>
+              <span class="badge progress">In production</span>
+            </div>
+            <h3>ShortlistIQ</h3>
+            <p>A full-stack AI recruiting platform that helps recruiters process large applicant volumes efficiently,
+              transparently, and responsibly.</p>
+            <div class="card-tags"><span>GenAI</span><span>Recruiting</span><span>Full-stack</span></div>
+            <span class="card-link">Coming soon</span>
+          </article>
+        </div>
+        <p class="ai-github reveal">All real, running codebases — <a href="https://github.com/gagu00000"
+            target="_blank" rel="noopener">browse the code on GitHub →</a></p>
+      </div>
+    </section>
+
+    <!-- ════════════════ 04 · EXPLORE ════════════════ -->
     <section id="explore" class="chapter">
       <div class="wrap">
-        <span class="chapter-tag reveal">03 · Campaigns</span>
+        <span class="chapter-tag reveal">04 · Campaigns</span>
         <h2 class="reveal">Selected <em>campaigns</em>.</h2>
         <p class="lede reveal">Public-health films, chart-topping artists, and supercars three sides of the same
           playbook.</p>
@@ -2187,8 +2321,7 @@
           <article class="card reveal">
             <span class="card-num">CP.02</span>
             <h3>Music &amp; Celebrity</h3>
-            <p>Talent management for DCA Talent Music (Dharma Cornerstone Agency) YouTube campaigns and brand
-              collaborations for Neeti Mohan, Anuv Jain, Vidya Vox and more, including appearances on Bigg Boss 17.</p>
+            <p>Managed brands and campaigns for celebrities like Shruti Sinha, Vivek Dahiya, and Shanvi Srivastava, alongside artist campaigns for singers including Neeti Mohan, Nikhita Gandhi, and many more.</p>
             <div class="card-tags"><span>Music</span><span>YouTube</span><span>Talent</span></div>
             <a class="card-link" href="music-celebrity.html">Watch the reels <span class="arrow">→</span></a>
           </article>
@@ -2221,11 +2354,11 @@
       </div>
     </section>
 
-    <!-- ════════════════ 04 · BUILD ════════════════ -->
+    <!-- ════════════════ 05 · BUILD ════════════════ -->
     <section id="build" class="chapter">
       <div class="wrap split">
         <div>
-          <span class="chapter-tag reveal">04 · Toolkit</span>
+          <span class="chapter-tag reveal">05 · Toolkit</span>
           <h2 class="reveal">A marketer with an<br /><em>engineer&rsquo;s</em> toolkit.</h2>
           <p class="lede reveal">Mechanical engineering taught me systems thinking. Marketing taught me people. The AI
             master&rsquo;s connects the two.</p>
@@ -2291,10 +2424,10 @@
       </div>
     </section>
 
-    <!-- ════════════════ 05 · ROADMAP ════════════════ -->
+    <!-- ════════════════ 06 · ROADMAP ════════════════ -->
     <section id="roadmap" class="chapter">
       <div class="wrap">
-        <span class="chapter-tag reveal">05 · Journey</span>
+        <span class="chapter-tag reveal">06 · Journey</span>
         <h2 class="reveal">The road so <em>far</em>.</h2>
         <p class="lede reveal">Engineering to marketing to AI every phase compounds.</p>
         <ul class="timeline">
@@ -2342,7 +2475,7 @@
     <!-- ════════════════ 06 · CONTACT ════════════════ -->
     <section id="about" class="chapter">
       <div class="wrap">
-        <span class="chapter-tag reveal">06 · Contact</span>
+        <span class="chapter-tag reveal">07 · Contact</span>
         <h2 class="reveal">Let&rsquo;s make your brand <em>unmissable</em>.</h2>
         <p class="lede reveal">Open to marketing, brand, and AI-strategy roles in Dubai and beyond. Reach out
           let&rsquo;s talk.</p>
@@ -2359,6 +2492,21 @@
             <div class="contact-info">
               <h4>Email</h4>
               <p>singhgagan1612@gmail.com</p>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
+          <!-- WhatsApp -->
+          <a href="https://wa.me/971508034862?text=Hi%20Gagandeep%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20connect."
+            target="_blank" rel="noopener" class="contact-card reveal" id="contact-whatsapp">
+            <div class="contact-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+              </svg>
+            </div>
+            <div class="contact-info">
+              <h4>WhatsApp</h4>
+              <p>Fastest reply — say hi</p>
             </div>
             <span class="contact-arrow">→</span>
           </a>
@@ -2464,13 +2612,21 @@
       var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
         /[?&]static=1/.test(location.search);
 
-      /* ---------- Preloader ---------- */
-      window.addEventListener("load", function () {
-        setTimeout(function () {
-          var preloader = document.getElementById("preloader");
-          if (preloader) preloader.classList.add("done");
-        }, 1800);
-      });
+      /* ---------- Preloader (full intro on first visit only) ---------- */
+      var preloaderEl = document.getElementById("preloader");
+      var preloaderSeen = false;
+      try { preloaderSeen = !!sessionStorage.getItem("gs-preloaded"); } catch (e) { }
+      if (preloaderEl && preloaderSeen) {
+        preloaderEl.style.transition = "none";
+        preloaderEl.classList.add("done");
+      } else if (preloaderEl) {
+        window.addEventListener("load", function () {
+          setTimeout(function () {
+            preloaderEl.classList.add("done");
+            try { sessionStorage.setItem("gs-preloaded", "1"); } catch (e) { }
+          }, 1800);
+        });
+      }
 
       /* ---------- Typing Animation ---------- */
       var words = ["ignore.", "forget.", "skip.", "overlook."];
@@ -2519,8 +2675,9 @@
         learn: ["02", "Profile"],
         explore: ["03", "Campaigns"],
         build: ["04", "Toolkit"],
-        roadmap: ["05", "Journey"],
-        about: ["06", "Contact"]
+        ailab: ["05", "AI Lab"],
+        roadmap: ["06", "Journey"],
+        about: ["07", "Contact"]
       };
       var badge = document.querySelector(".chapter-badge");
       var badgeKicker = badge.querySelector(".badge-kicker");
@@ -2671,6 +2828,7 @@
         { sel: "#learn", variant: "squircle", grad: "cgA", size: 78, pos: { right: "6%", top: "12%" }, depth: 0.25, rot: 8, bob: "5s", hideSm: true },
         { sel: "#explore", variant: "round", grad: "cgB", size: 100, pos: { right: "-34px", top: "16%" }, depth: 0.18, rot: -16, bob: "6s" },
         { sel: ".code-area", variant: "blob", grad: "cgC", size: 70, pos: { top: "-50px", right: "34px" }, depth: 0, rot: -5, bob: "4.8s", front: true },
+        { sel: "#ailab", variant: "squircle", grad: "cgB", size: 80, pos: { right: "7%", top: "16%" }, depth: 0.28, rot: -7, bob: "5.8s", hideSm: true },
         { sel: "#roadmap", variant: "cyclops", grad: "cgA", size: 88, pos: { right: "12%", top: "30%" }, depth: 0.40, rot: 5, bob: "5.6s", hideSm: true },
         { sel: "#about", variant: "round", grad: "cgC", size: 60, pos: { right: "7%", bottom: "12%" }, depth: 0.22, rot: 10, bob: "4.5s" }
       ];
@@ -2856,6 +3014,13 @@
           "</div>" +
           "</div>",
 
+          '<div class="story-slide" style="--sbg: linear-gradient(160deg, #0b1f3a 0%, #131336 55%, #0a0a0e 100%)">' +
+          '<p class="s-kicker">The other engine</p>' +
+          '<h3 class="s-title">I don’t just use AI — I <em>build</em> it.</h3>' +
+          '<p class="s-sub">Churn-prediction ML · multi-agent disaster response · retail intelligence · AI recruiting</p>' +
+          '<a class="story-cta" href="#ailab">Enter the AI Lab</a><span class="s-num">AI</span>' +
+          "</div>",
+
           '<div class="story-slide" style="--sbg: radial-gradient(130% 100% at 50% 100%, #0a2c52 0%, #0a0a0e 65%)">' +
           '<p class="s-kicker">That’s the story  yours next?</p>' +
           '<h3 class="s-title">Let’s make your brand <em>unmissable</em>.</h3>' +
@@ -2930,6 +3095,13 @@
         storyOpenBtn.addEventListener("click", storyOpen);
         storyCloseBtn.addEventListener("click", storyClose);
         storyViewer.querySelector(".story-backdrop").addEventListener("click", storyClose);
+
+        // story CTAs that point at a section of this page should close the
+        // viewer first, otherwise the page scrolls behind the open overlay
+        storyStage.addEventListener("click", function (e) {
+          var a = e.target.closest("a");
+          if (a && (a.getAttribute("href") || "").charAt(0) === "#") storyClose();
+        });
 
         // tap to advance, hold to pause (IG behaviour)
         storyViewer.querySelectorAll(".story-tap").forEach(function (zone) {

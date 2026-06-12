@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>404 — Gagandeep Singh</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%230085ff'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --accent: #0085ff;
+      --accent-bright: #4db2ff;
+      --text: #f2f2f0;
+      --text-dim: #9a9a96;
+      --line: rgba(255, 255, 255, 0.08);
+      --font-display: "Syne", sans-serif;
+      --font-body: "Inter", sans-serif;
+      --font-accent: "Instrument Serif", serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .grain {
+      position: fixed; inset: -100%; width: 300%; height: 300%;
+      pointer-events: none; z-index: 10; opacity: 0.055;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain-shift 1.2s steps(4) infinite;
+    }
+    @keyframes grain-shift {
+      0% { transform: translate(0,0); } 25% { transform: translate(-1.5%,1%); }
+      50% { transform: translate(1%,-1.5%); } 75% { transform: translate(-1%,-1%); }
+      100% { transform: translate(0,0); }
+    }
+
+    .glow {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 700px; height: 700px; border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, rgba(0,133,255,0.14) 0%, transparent 70%);
+      filter: blur(20px);
+    }
+
+    .wrap { position: relative; z-index: 2; padding: 2rem; }
+
+    .char404 { width: 130px; margin: 0 auto 1.6rem; animation: bob 4.5s ease-in-out infinite; }
+    .char404 svg { width: 100%; height: auto; overflow: visible; }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-14px) rotate(5deg); }
+    }
+
+    .code {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(4rem, 14vw, 7rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .code em {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent-bright);
+    }
+
+    .sub { color: var(--text-dim); margin: 1rem auto 2.2rem; max-width: 38ch; }
+
+    .row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.95em 2em; border-radius: 999px;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff; border: 1px solid var(--accent);
+      box-shadow: 0 0 30px rgba(0, 133, 255, 0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 40px rgba(0, 133, 255, 0.55); }
+    .btn-ghost { border: 1px solid var(--line); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent-bright); transform: translateY(-2px); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .grain, .char404 { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <div class="char404" aria-hidden="true">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g404" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3aa0ff" />
+            <stop offset="1" stop-color="#0052b8" />
+          </linearGradient>
+        </defs>
+        <path d="M60 8C95 8 112 36 110 66C108 96 88 110 60 110C32 110 12 96 10 66C8 36 25 8 60 8Z"
+          fill="url(#g404)" stroke="rgba(255,255,255,0.16)" stroke-width="1.5" />
+        <!-- confused eyes: one squinting -->
+        <circle cx="44" cy="56" r="11" fill="#fff" />
+        <circle cx="44" cy="57" r="5" fill="#0b0b12" />
+        <circle cx="76" cy="56" r="11" fill="#fff" />
+        <rect x="70" y="54" width="12" height="4.5" rx="2.25" fill="#0b0b12" />
+        <!-- worried mouth -->
+        <path d="M52 84 Q60 77 68 84" stroke="#0b0b12" stroke-width="3.5" stroke-linecap="round" fill="none" />
+        <ellipse cx="33" cy="69" rx="6" ry="3.5" fill="rgba(125,224,255,0.38)" />
+        <ellipse cx="87" cy="69" rx="6" ry="3.5" fill="rgba(125,224,255,0.38)" />
+        <!-- floating question mark -->
+        <text x="95" y="26" font-family="Syne, sans-serif" font-weight="800" font-size="22"
+          fill="#4db2ff">?</text>
+      </svg>
+    </div>
+
+    <h1 class="code">4<em>0</em>4</h1>
+    <p class="sub">This page didn&rsquo;t make the final cut. The campaign you&rsquo;re looking for moved, or never
+      existed.</p>
+    <div class="row">
+      <a href="/" class="btn btn-primary">Back to the portfolio</a>
+      <a href="/#explore" class="btn btn-ghost">See the campaigns</a>
+    </div>
+  </main>
+</body>
+</html>

@@ -368,13 +368,21 @@
 
   <script>
     (function () {
-      /* ---------- Preloader ---------- */
-      window.addEventListener("load", function() {
-        setTimeout(function() {
-          var preloader = document.getElementById("preloader");
-          if (preloader) preloader.classList.add("done");
-        }, 1200);
-      });
+      /* ---------- Preloader (skipped after first visit this session) ---------- */
+      var preloaderEl = document.getElementById("preloader");
+      var preloaderSeen = false;
+      try { preloaderSeen = !!sessionStorage.getItem("gs-preloaded"); } catch (e) { }
+      if (preloaderEl && preloaderSeen) {
+        preloaderEl.style.transition = "none";
+        preloaderEl.classList.add("done");
+      } else if (preloaderEl) {
+        window.addEventListener("load", function () {
+          setTimeout(function () {
+            preloaderEl.classList.add("done");
+            try { sessionStorage.setItem("gs-preloaded", "1"); } catch (e) { }
+          }, 1200);
+        });
+      }
 
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
