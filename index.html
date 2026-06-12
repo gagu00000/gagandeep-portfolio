@@ -428,12 +428,15 @@
 
     .strands-bg {
       position: fixed;
-      inset: 0;
+      top: 50%;
+      left: 0;
       width: 100%;
-      height: 100%;
+      height: 60vh;
+      transform: translateY(-50%);
       z-index: 0;
       pointer-events: none;
-      opacity: 0.45; /* Slightly less opaque to not overpower the text */
+      opacity: 0.18;
+      filter: blur(16px);
     }
 
     .wrap {
