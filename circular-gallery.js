@@ -110,19 +110,26 @@ function getFontSize(font) {
 function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'black') {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
+  
   context.font = font;
   const metrics = context.measureText(text);
   const textWidth = Math.ceil(metrics.width);
   const textHeight = Math.ceil(getFontSize(font) * 1.2);
-  canvas.width = textWidth + 20;
-  canvas.height = textHeight + 20;
+  
+  // Render at 3x resolution for high-DPI crispness
+  const dpr = 3;
+  canvas.width = (textWidth + 20) * dpr;
+  canvas.height = (textHeight + 20) * dpr;
+  
+  context.scale(dpr, dpr);
   context.font = font;
   context.fillStyle = color;
   context.textBaseline = 'middle';
   context.textAlign = 'center';
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
-  const texture = new Texture(gl, { generateMipmaps: false });
+  context.fillText(text, (textWidth + 20) / 2, (textHeight + 20) / 2);
+  
+  const texture = new Texture(gl, { generateMipmaps: true });
   texture.image = canvas;
   return { texture, width: canvas.width, height: canvas.height };
 }
