@@ -272,6 +272,8 @@
       overflow: hidden;
       cursor: grab;
       border-radius: 16px;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%);
     }
 
     .circular-gallery:active {
@@ -736,9 +738,9 @@
         items: items,
         bend: 3,
         textColor: "#4db2ff",
-        borderRadius: 0.05,
-        font: "bold 22px Syne",
-        fontUrl: "https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&display=swap",
+        borderRadius: 0.08,
+        font: "600 22px 'Inter', sans-serif",
+        fontUrl: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap",
         scrollSpeed: 2,
         scrollEase: 0.05
       });
