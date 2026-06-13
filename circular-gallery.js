@@ -186,7 +186,8 @@ class Title {
   }
   updateScale() {
     if (!this.mesh) return;
-    let textHeight = 0.12; // slightly smaller desired height
+    const isMobile = window.innerWidth < 768;
+    let textHeight = isMobile ? 0.16 : 0.12; // slightly larger text on mobile
     let desiredScaleX = (this.plane.scale.y * textHeight * this.baseAspect) / this.plane.scale.x;
     
     // Constrain to maximum 90% of the plane's width to prevent overlapping
@@ -388,7 +389,8 @@ class Media {
     if (this.title) {
       this.title.updateScale();
     }
-    this.padding = 2;
+    const isMobile = this.screen.width < 768;
+    this.padding = isMobile ? 1.0 : 2;
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
@@ -481,7 +483,9 @@ class App {
   onTouchMove(e) {
     if (!this.isDown) return;
     const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const distance = (this.start - x) * (this.scrollSpeed * 0.025);
+    const isMobile = this.screen.width < 768;
+    const sensitivity = isMobile ? 0.05 : 0.025;
+    const distance = (this.start - x) * (this.scrollSpeed * sensitivity);
     if (Math.abs(this.start - x) > 10) {
       this.hasDragged = true;
     }
