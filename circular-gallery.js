@@ -77,11 +77,8 @@ async function loadCustomFont(fontUrl) {
 async function resolveFont(font, fontUrl) {
   const effectiveUrl = fontUrl || (font === DEFAULT_FONT ? DEFAULT_FONT_URL : null);
   if (!effectiveUrl) {
-    if (document.fonts && document.fonts.load) {
-      try {
-        await document.fonts.load(font);
-        await document.fonts.ready;
-      } catch {}
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
     }
     return font;
   }
@@ -177,9 +174,17 @@ class Title {
     const aspect = width / height;
     const textHeight = this.plane.scale.y * 0.15;
     const textWidth = textHeight * aspect;
-    this.mesh.scale.set(textWidth, textHeight, 1);
-    this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
     this.mesh.setParent(this.plane);
+    this.baseAspect = aspect;
+    this.updateScale();
+  }
+  updateScale() {
+    if (!this.mesh) return;
+    const textHeight = 0.15; // desired height relative to plane Y
+    this.mesh.scale.y = textHeight;
+    // Fix aspect ratio distortion caused by plane non-uniform scaling:
+    this.mesh.scale.x = (this.plane.scale.y * textHeight * this.baseAspect) / this.plane.scale.x;
+    this.mesh.position.y = -0.5 - (textHeight * 0.5) - (0.05 / this.plane.scale.y);
   }
 }
 
@@ -365,6 +370,9 @@ class Media {
     this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
+    if (this.title) {
+      this.title.updateScale();
+    }
     this.padding = 2;
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
