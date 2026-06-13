@@ -77,8 +77,14 @@ async function loadCustomFont(fontUrl) {
 async function resolveFont(font, fontUrl) {
   const effectiveUrl = fontUrl || (font === DEFAULT_FONT ? DEFAULT_FONT_URL : null);
   if (!effectiveUrl) {
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
+    if (document.fonts && document.fonts.load) {
+      try {
+        await document.fonts.load(font);
+        await document.fonts.ready;
+      } catch (e) {
+        console.warn('Font load failed, waiting for ready instead', e);
+        await document.fonts.ready;
+      }
     }
     return font;
   }
@@ -180,10 +186,19 @@ class Title {
   }
   updateScale() {
     if (!this.mesh) return;
-    const textHeight = 0.15; // desired height relative to plane Y
+    let textHeight = 0.12; // slightly smaller desired height
+    let desiredScaleX = (this.plane.scale.y * textHeight * this.baseAspect) / this.plane.scale.x;
+    
+    // Constrain to maximum 90% of the plane's width to prevent overlapping
+    const maxScaleX = 0.90;
+    if (desiredScaleX > maxScaleX) {
+      const shrinkFactor = maxScaleX / desiredScaleX;
+      desiredScaleX = maxScaleX;
+      textHeight *= shrinkFactor;
+    }
+    
+    this.mesh.scale.x = desiredScaleX;
     this.mesh.scale.y = textHeight;
-    // Fix aspect ratio distortion caused by plane non-uniform scaling:
-    this.mesh.scale.x = (this.plane.scale.y * textHeight * this.baseAspect) / this.plane.scale.x;
     this.mesh.position.y = -0.5 - (textHeight * 0.5) - (0.05 / this.plane.scale.y);
   }
 }
