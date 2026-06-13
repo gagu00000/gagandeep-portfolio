@@ -280,6 +280,33 @@
       cursor: grabbing;
     }
 
+    .swipe-hint {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      pointer-events: none;
+      z-index: 10;
+      animation: pulse-hint 2s infinite ease-in-out;
+      transition: opacity 0.5s ease;
+      white-space: nowrap;
+    }
+
+    @keyframes pulse-hint {
+      0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(0.98); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.02); }
+    }
 
     .hero-glow {
       position: absolute;
@@ -602,7 +629,9 @@
 
     <section class="media-section">
       <div class="wrap" style="margin-top: -100px;">
-        <div id="circular-gallery" style="width: 100%; height: 70vh; max-height: 600px; min-height: 400px; position: relative;"></div>
+        <div id="circular-gallery" style="width: 100%; height: 70vh; max-height: 600px; min-height: 400px; position: relative;">
+          <div class="swipe-hint" id="swipe-hint">← Drag to explore →</div>
+        </div>
 
         <div class="next-row reveal">
           <a href="public-impact.html" class="btn-next" style="font-size: 1rem;">← Public Impact</a>
@@ -743,6 +772,12 @@
         scrollSpeed: 2,
         scrollEase: 0.05
       });
+
+      const hint = document.getElementById("swipe-hint");
+      const hideHint = () => { if (hint) hint.style.opacity = "0"; };
+      host.addEventListener("mousedown", hideHint, { once: true });
+      host.addEventListener("touchstart", hideHint, { once: true });
+      window.addEventListener("wheel", hideHint, { once: true });
     })();
   </script>
 </body>
