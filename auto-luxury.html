@@ -209,10 +209,15 @@
     .reel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 900px; margin: 0 auto; }
 
     .media-card {
+      position: relative; /* anchor for the stretched link below */
       background: var(--bg-raised); border: 1px solid var(--line); border-radius: 18px;
       overflow: hidden; transition: transform 0.45s var(--ease-out), border-color 0.45s, box-shadow 0.45s;
       display: flex; flex-direction: column;
     }
+    /* stretch the Instagram link over the whole card so the thumbnail
+       and its play button are actually clickable, not just the text */
+    .media-card .ext::after { content: ""; position: absolute; inset: 0; }
+    .media-card { cursor: pointer; }
     .media-card:hover {
       transform: translateY(-5px); border-color: rgba(0,133,255,0.5);
       box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 0 40px rgba(0,133,255,0.1);

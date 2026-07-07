@@ -421,7 +421,9 @@ class App {
     this.onResize();
     this.createGeometry();
     this.createMedias(items, bend, textColor, borderRadius, font);
-    this.update();
+    this.update = this.update.bind(this);
+    this.running = true;
+    this.raf = window.requestAnimationFrame(this.update);
     this.addEventListeners();
   }
   createRenderer() {
@@ -570,7 +572,17 @@ class App {
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
-    this.raf = window.requestAnimationFrame(this.update.bind(this));
+    this.raf = window.requestAnimationFrame(this.update);
+  }
+  pause() {
+    if (!this.running) return;
+    this.running = false;
+    window.cancelAnimationFrame(this.raf);
+  }
+  resume() {
+    if (this.running || document.hidden) return;
+    this.running = true;
+    this.raf = window.requestAnimationFrame(this.update);
   }
   addEventListeners() {
     this.boundOnResize = this.onResize.bind(this);
@@ -579,26 +591,39 @@ class App {
     this.boundOnTouchMove = this.onTouchMove.bind(this);
     this.boundOnTouchUp = this.onTouchUp.bind(this);
     window.addEventListener('resize', this.boundOnResize);
-    window.addEventListener('mousewheel', this.boundOnWheel);
-    window.addEventListener('wheel', this.boundOnWheel);
+    // wheel only over the gallery itself — a window-level listener would spin
+    // the gallery while the user scrolls the rest of the page (and 'mousewheel'
+    // + 'wheel' together double-fire in Chromium, doubling the scroll speed)
+    this.container.addEventListener('wheel', this.boundOnWheel, { passive: true });
     this.container.addEventListener('mousedown', this.boundOnTouchDown);
     window.addEventListener('mousemove', this.boundOnTouchMove);
     window.addEventListener('mouseup', this.boundOnTouchUp);
     this.container.addEventListener('touchstart', this.boundOnTouchDown);
     window.addEventListener('touchmove', this.boundOnTouchMove);
     window.addEventListener('touchend', this.boundOnTouchUp);
+    // horizontal drags belong to the gallery; vertical swipes keep scrolling the page
+    this.container.style.touchAction = 'pan-y';
+
+    // don't burn GPU while the gallery is off-screen or the tab is hidden
+    this.boundVisibility = () => (document.hidden ? this.pause() : this.resume());
+    document.addEventListener('visibilitychange', this.boundVisibility);
+    this.io = new IntersectionObserver(entries => {
+      entries.forEach(entry => (entry.isIntersecting ? this.resume() : this.pause()));
+    });
+    this.io.observe(this.container);
   }
   destroy() {
-    window.cancelAnimationFrame(this.raf);
+    this.pause();
     window.removeEventListener('resize', this.boundOnResize);
-    window.removeEventListener('mousewheel', this.boundOnWheel);
-    window.removeEventListener('wheel', this.boundOnWheel);
+    this.container.removeEventListener('wheel', this.boundOnWheel);
     this.container.removeEventListener('mousedown', this.boundOnTouchDown);
     window.removeEventListener('mousemove', this.boundOnTouchMove);
     window.removeEventListener('mouseup', this.boundOnTouchUp);
     this.container.removeEventListener('touchstart', this.boundOnTouchDown);
     window.removeEventListener('touchmove', this.boundOnTouchMove);
     window.removeEventListener('touchend', this.boundOnTouchUp);
+    document.removeEventListener('visibilitychange', this.boundVisibility);
+    if (this.io) this.io.disconnect();
     if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
     }

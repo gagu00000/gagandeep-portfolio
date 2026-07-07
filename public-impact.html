@@ -655,11 +655,16 @@
       <div class="wrap">
         <div class="media-grid">
           <article class="media-card reveal">
-            <div class="frame">
-              <iframe src="https://www.youtube-nocookie.com/embed/yLgOg1QkTOI"
-                title="Road safety film with Mumbai Traffic Police" loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+            <div class="frame" data-video="yLgOg1QkTOI" data-title="Road safety film with Mumbai Traffic Police">
+              <button class="yt-facade" type="button" aria-label="Play: road safety film with Mumbai Traffic Police">
+                <img src="https://i.ytimg.com/vi/yLgOg1QkTOI/maxresdefault.jpg"
+                  onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/yLgOg1QkTOI/hqdefault.jpg'" alt=""
+                  loading="lazy" />
+                <span class="play-btn" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg></span>
+              </button>
             </div>
             <div class="media-meta">
               <h3>Mumbai Traffic Police</h3>
@@ -669,11 +674,18 @@
             </div>
           </article>
           <article class="media-card reveal">
-            <div class="frame">
-              <iframe src="https://www.youtube-nocookie.com/embed/LLDwEmLPYWo"
-                title="Road safety film with Karnataka State Road Safety Authority" loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+            <div class="frame" data-video="LLDwEmLPYWo"
+              data-title="Road safety film with Karnataka State Road Safety Authority">
+              <button class="yt-facade" type="button"
+                aria-label="Play: road safety film with Karnataka State Road Safety Authority">
+                <img src="https://i.ytimg.com/vi/LLDwEmLPYWo/maxresdefault.jpg"
+                  onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/LLDwEmLPYWo/hqdefault.jpg'" alt=""
+                  loading="lazy" />
+                <span class="play-btn" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg></span>
+              </button>
             </div>
             <div class="media-meta">
               <h3>Karnataka State Road Safety Authority</h3>
@@ -713,6 +725,29 @@
           }, 1200);
         });
       }
+
+      /* ---------- Click-to-play YouTube facades ----------
+         Avoids player Error 153 (missing referrer): when served over
+         http(s) the player loads on demand with an explicit referrer
+         policy; when opened from file:// (no referrer possible) the
+         click opens the video on YouTube instead. */
+      document.querySelectorAll(".frame[data-video]").forEach(function (frame) {
+        frame.querySelector(".yt-facade").addEventListener("click", function () {
+          var id = frame.getAttribute("data-video");
+          if (location.protocol === "file:") {
+            window.open("https://youtu.be/" + id, "_blank", "noopener");
+            return;
+          }
+          var f = document.createElement("iframe");
+          f.src = "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1";
+          f.title = frame.getAttribute("data-title") || "YouTube video";
+          f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          f.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+          frame.innerHTML = "";
+          frame.appendChild(f);
+        });
+      });
 
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {

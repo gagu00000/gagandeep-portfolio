@@ -216,7 +216,8 @@ export default async function initStrands(container, userOptions = {}) {
   };
 
   const renderer = new Renderer({
-    dpr: Math.min(window.devicePixelRatio || 1, 1.5),
+    // full-screen fragment shader — keep the pixel budget low on phones
+    dpr: Math.min(window.devicePixelRatio || 1, window.innerWidth < 860 ? 1 : 1.5),
     alpha: true,
     premultipliedAlpha: true,
     antialias: true
@@ -261,23 +262,29 @@ export default async function initStrands(container, userOptions = {}) {
 
   const mesh = new Mesh(gl, { geometry, program });
 
-  const renderTarget = new RenderTarget(gl, {
-    width: container.offsetWidth,
-    height: container.offsetHeight
-  });
-
-  const glassProgram = new Program(gl, {
-    vertex: VERT,
-    fragment: GLASS_FRAG,
-    uniforms: {
-      uScene: { value: renderTarget.texture },
-      uResolution: { value: [container.offsetWidth, container.offsetHeight] },
-      uRadius: { value: 0.46 * options.glassSize },
-      uRefraction: { value: options.refraction },
-      uDispersion: { value: options.dispersion }
-    }
-  });
-  const glassMesh = new Mesh(gl, { geometry, program: glassProgram });
+  // the glass pass needs an extra full-size render target — only pay for it
+  // when the effect is actually enabled
+  let renderTarget = null;
+  let glassProgram = null;
+  let glassMesh = null;
+  if (options.glass) {
+    renderTarget = new RenderTarget(gl, {
+      width: container.offsetWidth,
+      height: container.offsetHeight
+    });
+    glassProgram = new Program(gl, {
+      vertex: VERT,
+      fragment: GLASS_FRAG,
+      uniforms: {
+        uScene: { value: renderTarget.texture },
+        uResolution: { value: [container.offsetWidth, container.offsetHeight] },
+        uRadius: { value: 0.46 * options.glassSize },
+        uRefraction: { value: options.refraction },
+        uDispersion: { value: options.dispersion }
+      }
+    });
+    glassMesh = new Mesh(gl, { geometry, program: glassProgram });
+  }
 
   container.appendChild(gl.canvas);
 
@@ -287,18 +294,19 @@ export default async function initStrands(container, userOptions = {}) {
     const height = container.offsetHeight;
     renderer.setSize(width, height);
     program.uniforms.uResolution.value = [width, height];
-    renderTarget.setSize(width, height);
-    glassProgram.uniforms.uResolution.value = [width, height];
+    if (renderTarget) renderTarget.setSize(width, height);
+    if (glassProgram) glassProgram.uniforms.uResolution.value = [width, height];
   }
   window.addEventListener('resize', resize);
   resize();
 
   let animateId = 0;
+  let running = false;
   const update = t => {
     animateId = requestAnimationFrame(update);
     program.uniforms.uTime.value = t * 0.001;
 
-    if (options.glass) {
+    if (options.glass && glassProgram) {
       renderer.render({ scene: mesh, target: renderTarget });
       glassProgram.uniforms.uScene.value = renderTarget.texture;
       renderer.render({ scene: glassMesh });
@@ -306,11 +314,27 @@ export default async function initStrands(container, userOptions = {}) {
       renderer.render({ scene: mesh });
     }
   };
-  animateId = requestAnimationFrame(update);
+  const start = () => {
+    if (running || document.hidden) return;
+    running = true;
+    animateId = requestAnimationFrame(update);
+  };
+  const stop = () => {
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(animateId);
+  };
+  // don't render while the tab is in the background
+  const onVisibility = () => (document.hidden ? stop() : start());
+  document.addEventListener('visibilitychange', onVisibility);
+  start();
 
   return {
+    pause: stop,
+    resume: start,
     destroy: () => {
-      cancelAnimationFrame(animateId);
+      stop();
+      document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('resize', resize);
       if (container && gl.canvas.parentNode === container) {
         container.removeChild(gl.canvas);
@@ -334,9 +358,11 @@ export default async function initStrands(container, userOptions = {}) {
       program.uniforms.uOpacity.value = options.opacity;
       program.uniforms.uScale.value = options.scale;
       program.uniforms.uSaturation.value = options.saturation;
-      glassProgram.uniforms.uRefraction.value = options.refraction;
-      glassProgram.uniforms.uDispersion.value = options.dispersion;
-      glassProgram.uniforms.uRadius.value = 0.46 * options.glassSize;
+      if (glassProgram) {
+        glassProgram.uniforms.uRefraction.value = options.refraction;
+        glassProgram.uniforms.uDispersion.value = options.dispersion;
+        glassProgram.uniforms.uRadius.value = 0.46 * options.glassSize;
+      }
     }
   };
 }
