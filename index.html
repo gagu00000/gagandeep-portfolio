@@ -426,13 +426,16 @@
       z-index: 1;
     }
 
-    .strands-bg {
+    /* one continuous 3D neural constellation behind chapters 1–7:
+       nodes in deep space with perspective + depth fog, orbiting as you
+       scroll, with bright "signal" pulses travelling the connections —
+       AI structure carrying a marketing message */
+    #neural-bg {
       position: fixed;
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.28;
-      filter: blur(9px);
+      opacity: 0.65;
     }
 
     .wrap {
@@ -518,26 +521,12 @@
     #welcome {
       justify-content: center;
       text-align: center;
-      background-color: var(--bg);
-      z-index: 2; /* ensure it completely covers the fixed strands background */
     }
 
     #welcome .wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .hero-fluid {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .hero-fluid canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
     }
 
     .hero-orb {
@@ -552,19 +541,6 @@
       filter: blur(20px);
       pointer-events: none;
       will-change: transform;
-    }
-
-    .hero-grid {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 72px 72px;
-      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 0%, transparent 75%);
-      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 0%, transparent 75%);
-      opacity: 0.5;
     }
 
     .hero-kicker {
@@ -2124,8 +2100,8 @@
     </div>
   </div>
 
-  <!-- Global fixed strands background for chapters 2-6 -->
-  <div class="strands-bg" id="site-strands"></div>
+  <!-- Continuous neural-network background behind chapters 1-7 -->
+  <canvas id="neural-bg" aria-hidden="true"></canvas>
 
   <!-- Film grain overlay -->
   <div class="grain" aria-hidden="true"></div>
@@ -2173,9 +2149,7 @@
 
     <!-- ════════════════ 01 · WELCOME ════════════════ -->
     <section id="welcome" class="chapter">
-      <div class="hero-fluid" aria-hidden="true"></div>
       <div class="hero-orb" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
       <div class="wrap">
         <button class="story-ring reveal" id="storyOpen" aria-haspopup="dialog" aria-label="Watch my story">
           <span class="ring-wrap"><img src="profile.webp" alt="Gagandeep Singh" class="profile-photo" /></span>
@@ -2832,6 +2806,7 @@
       ];
 
       var chars = [];
+      var storyChars = []; // mascots inside the story viewer (filled when slides build)
       CHAR_CONFIG.forEach(function (cfg) {
         var host = document.querySelector(cfg.sel);
         if (!host) return;
@@ -2944,6 +2919,24 @@
             if (c.mouth && mouthRy !== c.lastRy) { c.mouth.setAttribute("ry", mouthRy); c.lastRy = mouthRy; }
           });
 
+          // mascots inside the open story viewer: pupils follow the cursor
+          if (storyViewer && !storyViewer.hidden && finePointer) {
+            storyChars.forEach(function (c) {
+              var er = c.el.getBoundingClientRect();
+              if (!er.width) return;
+              var dx = mouse.x - (er.left + er.width / 2);
+              var dy = mouse.y - (er.top + er.height / 2);
+              var dist = Math.hypot(dx, dy) || 1;
+              c.px += ((dx / dist) * 4.4 - c.px) * 0.16;
+              c.py += ((dy / dist) * 4.4 - c.py) * 0.16;
+              var ptf = "translate(" + c.px.toFixed(1) + "px," + c.py.toFixed(1) + "px)";
+              if (ptf !== c.lastPtf) {
+                for (var i = 0; i < c.pupils.length; i++) c.pupils[i].style.transform = ptf;
+                c.lastPtf = ptf;
+              }
+            });
+          }
+
           requestAnimationFrame(charFrame);
         })();
       }
@@ -3032,6 +3025,12 @@
         ];
 
         storyStage.innerHTML = STORY_SLIDES.join("");
+
+        // register the slide mascots so the main animation loop can make
+        // their pupils follow the cursor while the story is open
+        storyStage.querySelectorAll(".s-char").forEach(function (el) {
+          storyChars.push({ el: el, pupils: el.querySelectorAll(".pupil"), px: 0, py: 0, lastPtf: "" });
+        });
         storyProgress.innerHTML = STORY_SLIDES.map(function () { return '<span class="seg"><i></i></span>'; }).join("");
 
         var slides = storyStage.querySelectorAll(".story-slide");
@@ -3130,346 +3129,180 @@
     })();
   </script>
 
-  <!-- Ferrofluid hero background   vanilla port of React Bits' <Ferrofluid /> (ogl via CDN).
-       Skipped under prefers-reduced-motion / ?static=1; paused while the hero is off-screen.
-       If the CDN is unreachable the hero simply falls back to the orb + grid. -->
-  <script type="module">
-    (async () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      if (/[?&]static=1/.test(location.search)) return;
-      const host = document.querySelector(".hero-fluid");
-      if (!host || !window.WebGLRenderingContext) return;
+  <!-- 3D neural constellation background (chapters 1-7).
+       Pure Canvas 2D with hand-rolled 3D projection — no WebGL, no
+       dependencies, near-zero cost. Perspective + depth fog + scroll-driven
+       orbit + mouse-tilt parallax give the 3D feel; "signal" pulses travel
+       the network edges. Skipped under prefers-reduced-motion / ?static=1
+       (renders one static frame instead); pauses in hidden tabs. -->
+  <script>
+    (function () {
+      "use strict";
+      var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        /[?&]static=1/.test(location.search);
+      var canvas = document.getElementById("neural-bg");
+      if (!canvas) return;
+      var ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-      let ogl;
-      try {
-        ogl = await import("https://cdn.jsdelivr.net/npm/ogl@1.0.11/+esm");
-      } catch (e) {
-        return;
+      var dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 860 ? 1 : 1.5);
+      var FOV = 380;      // perspective strength
+      var Z0 = 520;       // camera offset — keeps every point in front
+      var W, H, CX, CY;
+      var pts = [], edges = [], signals = [];
+      var sp = 0;                    // smoothed scroll progress 0..1
+      var tiltX = 0, tiltY = 0;      // smoothed mouse tilt
+      var tiltXT = 0, tiltYT = 0;
+
+      function resize() {
+        W = window.innerWidth; H = window.innerHeight;
+        CX = W / 2; CY = H / 2;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        seed();
+        // resizing wipes the bitmap; with no animation loop running (reduced
+        // motion / static mode) repaint the single frame or it stays blank
+        if (reduced) { sp = scrollP(); draw(12000); }
       }
-      const { Renderer, Program, Mesh, Triangle } = ogl;
 
-      const OPTS = {
-        colors: ["#0085ff", "#3b82f6", "#c2c1c1"],
-        speed: 0.5,
-        scale: 1,
-        turbulence: 1,
-        fluidity: 0.1,
-        rimWidth: 0.2,
-        sharpness: 3,
-        shimmer: 1,
-        glow: 3,
-        flowDirection: "down",
-        opacity: 0.55,
-        mouseStrength: 0.5,
-        mouseRadius: 0.4,
-        mouseDampening: 0.15
-      };
-      const MAX_COLORS = 8;
-
-      const hexToRGB = (hex) => {
-        const c = hex.replace("#", "").padEnd(6, "0");
-        return [
-          parseInt(c.slice(0, 2), 16) / 255,
-          parseInt(c.slice(2, 4), 16) / 255,
-          parseInt(c.slice(4, 6), 16) / 255
-        ];
-      };
-
-      const prepColors = (input) => {
-        const base = (input && input.length ? input : ["#4F46E5", "#06B6D4", "#E0F2FE"]).slice(0, MAX_COLORS);
-        const count = base.length;
-        const arr = [];
-        for (let i = 0; i < MAX_COLORS; i++) arr.push(hexToRGB(base[Math.min(i, base.length - 1)]));
-        const avg = [0, 0, 0];
-        for (let i = 0; i < count; i++) {
-          avg[0] += arr[i][0]; avg[1] += arr[i][1]; avg[2] += arr[i][2];
+      function seed() {
+        var n = W < 860 ? 85 : 150;
+        pts = []; edges = []; signals = [];
+        var sx = W * 1.15, sy = H * 1.15, sz = 350;
+        for (var i = 0; i < n; i++) {
+          pts.push({
+            x: (Math.random() * 2 - 1) * sx,
+            y: (Math.random() * 2 - 1) * sy,
+            z: (Math.random() * 2 - 1) * sz,
+            ph: Math.random() * 6.28,          // per-node wander phase
+            hub: Math.random() < 0.12,
+            px: 0, py: 0, k: 0                 // projected values, filled per frame
+          });
         }
-        avg[0] /= count; avg[1] /= count; avg[2] /= count;
-        return { arr, count, avg };
-      };
+        // static network topology: link near neighbours in 3D, max 3 per node
+        var LINK = Math.max(sx, sy) * 0.25;
+        var deg = new Array(n).fill(0);
+        for (i = 0; i < n; i++) {
+          for (var j = i + 1; j < n; j++) {
+            if (deg[i] > 3 || deg[j] > 3) continue;
+            var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y, dz = pts[i].z - pts[j].z;
+            if (dx * dx + dy * dy + dz * dz < LINK * LINK) {
+              edges.push([i, j]);
+              deg[i]++; deg[j]++;
+            }
+          }
+        }
+      }
 
-      const flowVec = (d) =>
-        d === "up" ? [0, 1] : d === "left" ? [-1, 0] : d === "right" ? [1, 0] : [0, -1];
+      function scrollP() {
+        var max = document.documentElement.scrollHeight - H;
+        return max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+      }
 
-      const vertex = `
-attribute vec2 position;
-attribute vec2 uv;
-varying vec2 vUv;
-void main() {
-  vUv = uv;
-  gl_Position = vec4(position, 0.0, 1.0);
-}
-`;
+      function draw(t) {
+        sp += (scrollP() - sp) * 0.06;
+        tiltY += (tiltYT - tiltY) * 0.05;
+        tiltX += (tiltXT - tiltX) * 0.05;
 
-      const fragment = `
-precision highp float;
+        // the whole constellation orbits: idle drift + scroll travel + tilt
+        var rotY = t * 0.00009 + sp * 2.3 + tiltY;
+        var rotX = -0.12 + sp * 0.35 + tiltX;
+        var cy = Math.cos(rotY), sy = Math.sin(rotY);
+        var cx = Math.cos(rotX), sx = Math.sin(rotX);
+        var hue = 208 + sp * 42;   // brand blue → violet across the chapters
+        var wob = t * 0.0011;
 
-uniform vec3  iResolution;
-uniform vec2  iMouse;
-uniform float iTime;
+        ctx.clearRect(0, 0, W, H);
 
-uniform vec3  uColor0;
-uniform vec3  uColor1;
-uniform vec3  uColor2;
-uniform vec3  uColor3;
-uniform vec3  uColor4;
-uniform vec3  uColor5;
-uniform vec3  uColor6;
-uniform vec3  uColor7;
-uniform int   uColorCount;
+        // project all points
+        for (var i = 0; i < pts.length; i++) {
+          var p = pts[i];
+          var ox = p.x + Math.sin(wob + p.ph) * 28;      // organic wander — lines visibly breathe
+          var oy = p.y + Math.cos(wob * 0.8 + p.ph) * 28;
+          var x1 = ox * cy + p.z * sy;
+          var z1 = -ox * sy + p.z * cy;
+          var y1 = oy * cx - z1 * sx;
+          var z2 = oy * sx + z1 * cx;
+          var k = FOV / (FOV + z2 + Z0);
+          p.px = CX + x1 * k;
+          p.py = CY + y1 * k;
+          p.k = k;
+        }
 
-uniform vec3  uMouseColor;
-uniform vec2  uFlow;
-uniform float uSpeed;
-uniform float uScale;
-uniform float uTurbulence;
-uniform float uFluidity;
-uniform float uRimWidth;
-uniform float uSharpness;
-uniform float uShimmer;
-uniform float uGlow;
-uniform float uOpacity;
-uniform float uMouseEnabled;
-uniform float uMouseStrength;
-uniform float uMouseRadius;
+        // edges, faded by depth
+        ctx.lineWidth = 1;
+        for (i = 0; i < edges.length; i++) {
+          var a = pts[edges[i][0]], b = pts[edges[i][1]];
+          var ka = Math.min(a.k, b.k);
+          var al = Math.max((ka - 0.28) * 0.8, 0.03);
+          ctx.strokeStyle = "hsla(" + hue + ",90%,62%," + al + ")";
+          ctx.beginPath(); ctx.moveTo(a.px, a.py); ctx.lineTo(b.px, b.py); ctx.stroke();
+        }
 
-varying vec2 vUv;
+        // nodes: always visible (floored size + alpha), each breathing on its
+        // own pulse; nearer = bigger + brighter for the depth cue
+        var tp = t * 0.0018;
+        for (i = 0; i < pts.length; i++) {
+          p = pts[i];
+          var pulse = 0.5 + 0.5 * Math.sin(tp + p.ph * 4.0);
+          var r = Math.max((p.hub ? 2.4 : 1.6) * p.k * 1.9, 1.4) * (0.85 + 0.45 * pulse);
+          var na = Math.min((0.5 + p.k * 0.45) * (0.7 + 0.3 * pulse) + (p.hub ? 0.15 : 0), 1);
+          ctx.fillStyle = "hsla(" + hue + "," + (p.hub ? 100 : 70) + "%," + (p.hub ? 68 : 78) + "%," + na + ")";
+          ctx.beginPath(); ctx.arc(p.px, p.py, r, 0, 6.2832); ctx.fill();
+          if (p.hub) {   // radiating "broadcast" ping, like a beacon
+            var ring = (t * 0.0004 + p.ph) % 1;
+            ctx.strokeStyle = "hsla(" + hue + ",95%,65%," + ((1 - ring) * 0.35).toFixed(3) + ")";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.arc(p.px, p.py, r + ring * 40 * p.k, 0, 6.2832); ctx.stroke();
+            ctx.lineWidth = 1;
+          }
+        }
 
-#define PI 3.14159265
+        // signal pulses travelling the network — the message finding its audience
+        if (signals.length < 7 && Math.random() < 0.06 && edges.length) {
+          var e = edges[(Math.random() * edges.length) | 0];
+          signals.push({ a: e[0], b: e[1], t: 0, v: 0.008 + Math.random() * 0.012 });
+        }
+        for (i = signals.length - 1; i >= 0; i--) {
+          var s = signals[i];
+          s.t += s.v;
+          if (s.t >= 1) { signals.splice(i, 1); continue; }
+          var pa = pts[s.a], pb = pts[s.b];
+          var mx = pa.px + (pb.px - pa.px) * s.t;
+          var my = pa.py + (pb.py - pa.py) * s.t;
+          var mk = pa.k + (pb.k - pa.k) * s.t;
+          ctx.fillStyle = "hsla(" + hue + ",100%,78%,0.95)";
+          ctx.beginPath(); ctx.arc(mx, my, 2.4 * mk * 1.9, 0, 6.2832); ctx.fill();
+          ctx.fillStyle = "hsla(" + hue + ",100%,65%,0.16)";
+          ctx.beginPath(); ctx.arc(mx, my, 8 * mk * 1.9, 0, 6.2832); ctx.fill();
+        }
+      }
 
-vec3 palette(float h) {
-  int count = uColorCount;
-  if (count < 1) count = 1;
-  int idx = int(floor(clamp(h, 0.0, 0.999999) * float(count)));
-  if (idx <= 0) return uColor0;
-  if (idx == 1) return uColor1;
-  if (idx == 2) return uColor2;
-  if (idx == 3) return uColor3;
-  if (idx == 4) return uColor4;
-  if (idx == 5) return uColor5;
-  if (idx == 6) return uColor6;
-  return uColor7;
-}
+      var raf = 0;
+      function frame(t) {
+        raf = requestAnimationFrame(frame);
+        draw(t);
+      }
+      function start() { if (!raf && !document.hidden) raf = requestAnimationFrame(frame); }
+      function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
 
-float hash(vec3 p3) {
-  p3 = fract(p3 * 0.1031);
-  p3 += dot(p3, p3.zyx + 33.33);
-  return fract((p3.x + p3.y) * p3.z);
-}
-
-float smin(float a, float b, float k) {
-  float r = exp2(-a / k) + exp2(-b / k);
-  return -k * log2(r);
-}
-
-float sinlerp(float a, float b, float w) {
-  return mix(a, b, (sin(w * PI - PI / 2.0) + 1.0) / 2.0);
-}
-
-float vn(vec2 p, float s, float seed) {
-  vec2 cellp = floor(p / s);
-  vec2 relp = mod(p, s);
-  float g1 = hash(vec3(cellp, seed));
-  float g2 = hash(vec3(cellp.x + 1.0, cellp.y, seed));
-  float g3 = hash(vec3(cellp.x + 1.0, cellp.y + 1.0, seed));
-  float g4 = hash(vec3(cellp.x, cellp.y + 1.0, seed));
-  float bx = sinlerp(g1, g2, relp.x / s);
-  float tx = sinlerp(g4, g3, relp.x / s);
-  return sinlerp(bx, tx, relp.y / s);
-}
-
-float dbn(vec2 p, float s, float seed) {
-  float o = s / 2.0;
-  float n0 = vn(p, s, seed);
-  float n1 = vn(p + vec2(o, o), s, seed + 0.1);
-  float n2 = vn(p + vec2(-o, o), s, seed + 0.2);
-  float n3 = vn(p + vec2(o, -o), s, seed + 0.3);
-  float n4 = vn(p + vec2(-o, -o), s, seed + 0.4);
-  return (2.0 * n0 + 1.5 * n1 + 1.25 * n2 + 1.125 * n3 + n4) / 7.0;
-}
-
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  float ref = 700.0 / max(uScale, 0.05);
-  vec2 p = fragCoord / iResolution.y * ref;
-
-  float spd = 200.0 * uSpeed;
-  float t = iTime;
-
-  vec2 dir = uFlow;
-  vec2 perp = vec2(-dir.y, dir.x);
-
-  float distort1 = vn(p + perp * (t * spd), 60.0, 10.0) * 50.0 * uTurbulence;
-  float distort2 = vn(p - perp * (t * spd), 120.0, 15.0) * 100.0 * uTurbulence;
-
-  float peaks = dbn(p + distort1 + dir * (t * spd * 0.5), 40.0, 1.0);
-  float peaks2 = dbn(p + distort2 - dir * (t * spd * 0.5), 40.0, 0.0);
-
-  float mapeaks = smin(peaks, peaks2, max(uFluidity, 0.001));
-
-  float mGlow = 0.0;
-  if (uMouseEnabled > 0.5) {
-    vec2 mp = iMouse / iResolution.y * ref;
-    float md = length(p - mp) / ref;
-    float rr = max(uMouseRadius, 0.02);
-    mGlow = exp(-md * md / (rr * rr)) * uMouseStrength;
-  }
-
-  float band = (uRimWidth - abs((mapeaks - 0.4) * 2.0)) * 5.0;
-  float ltn = clamp(band - vn(p + dir * (t * spd * 0.5), 60.0, 12.0) * uShimmer, 0.0, 1.0);
-  ltn = pow(ltn, uSharpness) * uGlow;
-  ltn *= clamp(1.0 - mGlow, 0.0, 1.0);
-
-  float h = clamp(0.5 + (peaks - peaks2) * 0.8, 0.0, 1.0);
-  vec3 col = palette(h);
-
-  vec3 outc = col * ltn;
-  float a = clamp(max(outc.r, max(outc.g, outc.b)), 0.0, 1.0);
-  fragColor = vec4(outc, a * uOpacity);
-}
-
-void main() {
-  vec4 color;
-  mainImage(color, vUv * iResolution.xy);
-  gl_FragColor = color;
-}
-`;
-
-      const renderer = new Renderer({
-        dpr: Math.min(window.devicePixelRatio || 1, window.innerWidth < 860 ? 1 : 1.5),
-        alpha: true,
-        antialias: true
-      });
-      const gl = renderer.gl;
-      const canvas = gl.canvas;
-      gl.clearColor(0, 0, 0, 0);
-      host.appendChild(canvas);
-
-      const { arr, count, avg } = prepColors(OPTS.colors);
-
-      const uniforms = {
-        iResolution: { value: [gl.drawingBufferWidth, gl.drawingBufferHeight, 1] },
-        iMouse: { value: [0, 0] },
-        iTime: { value: 0 },
-        uColor0: { value: arr[0] },
-        uColor1: { value: arr[1] },
-        uColor2: { value: arr[2] },
-        uColor3: { value: arr[3] },
-        uColor4: { value: arr[4] },
-        uColor5: { value: arr[5] },
-        uColor6: { value: arr[6] },
-        uColor7: { value: arr[7] },
-        uColorCount: { value: count },
-        uMouseColor: { value: avg },
-        uFlow: { value: flowVec(OPTS.flowDirection) },
-        uSpeed: { value: OPTS.speed },
-        uScale: { value: OPTS.scale },
-        uTurbulence: { value: OPTS.turbulence },
-        uFluidity: { value: OPTS.fluidity },
-        uRimWidth: { value: OPTS.rimWidth },
-        uSharpness: { value: OPTS.sharpness },
-        uShimmer: { value: OPTS.shimmer },
-        uGlow: { value: OPTS.glow },
-        uOpacity: { value: OPTS.opacity },
-        uMouseEnabled: { value: 1 },
-        uMouseStrength: { value: OPTS.mouseStrength },
-        uMouseRadius: { value: OPTS.mouseRadius }
-      };
-
-      const program = new Program(gl, { vertex, fragment, uniforms });
-      const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
-
-      const mouseTarget = [0, 0];
-      const resize = () => {
-        const rect = host.getBoundingClientRect();
-        renderer.setSize(rect.width, rect.height);
-        uniforms.iResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight, 1];
-      };
-      resize();
-      // start the magnetic spike near the headline instead of a corner
-      mouseTarget[0] = gl.drawingBufferWidth / 2;
-      mouseTarget[1] = gl.drawingBufferHeight * 0.45;
-      uniforms.iMouse.value = mouseTarget.slice();
-      new ResizeObserver(resize).observe(host);
-
-      // listen on the section (the canvas sits behind the text, so it never
-      // receives pointer events itself)
-      document.getElementById("welcome").addEventListener("pointermove", (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const sc = renderer.dpr || 1;
-        mouseTarget[0] = (e.clientX - rect.left) * sc;
-        mouseTarget[1] = (rect.height - (e.clientY - rect.top)) * sc;
+      window.addEventListener("resize", resize);
+      window.addEventListener("pointermove", function (e) {
+        tiltYT = (e.clientX / W - 0.5) * 0.34;
+        tiltXT = (e.clientY / H - 0.5) * 0.22;
       }, { passive: true });
 
-      let raf = 0;
-      let last = 0;
-      const loop = (t) => {
-        raf = requestAnimationFrame(loop);
-        uniforms.iTime.value = t * 0.001;
-        if (!last) last = t;
-        const dt = (t - last) / 1000;
-        last = t;
-        const f = Math.min(1, 1 - Math.exp(-dt / Math.max(1e-4, OPTS.mouseDampening)));
-        const cur = uniforms.iMouse.value;
-        cur[0] += (mouseTarget[0] - cur[0]) * f;
-        cur[1] += (mouseTarget[1] - cur[1]) * f;
-        renderer.render({ scene: mesh });
-      };
-      const start = () => { if (!raf) { last = 0; raf = requestAnimationFrame(loop); } };
-      const stop = () => { if (raf) { cancelAnimationFrame(raf); raf = 0; } };
-
-      // only burn GPU while the hero is actually on screen
-      new IntersectionObserver((entries) => {
-        entries.forEach((en) => (en.isIntersecting ? start() : stop()));
-      }).observe(host);
-
-      window.__ferro = { start, stop }; // debug hook
-    })();
-  </script>
-
-  <script type="module">
-    import initStrands from './strands.js';
-
-    (async () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      if (/[?&]static=1/.test(location.search)) return;
-      
-      const host = document.getElementById("site-strands");
-      if (!host) return;
-
-      const strands = await initStrands(host, {
-        colors: ["#0085ff", "#4db2ff", "#19c8ff", "#5d7bff"],
-        count: 6, /* fuller weave for the full-screen background */
-        speed: 0.5,
-        amplitude: 1.5,
-        waviness: 0.85,
-        thickness: 0.65,
-        glow: 2.5,
-        taper: 2.2,
-        spread: 1,
-        intensity: 0.55,
-        scale: 1.35
-      });
-
-      if (!strands) return;
-
-      // chapter 1 has an opaque background that fully covers the fixed
-      // strands layer — skip the GPU work until the user scrolls past it.
-      // While visible, drift the palette hue with scroll so each chapter
-      // sits in a slightly different colour mood.
-      let lastHue = -1;
-      const gate = () => {
-        if (window.scrollY < window.innerHeight * 0.6) { strands.pause(); return; }
-        strands.resume();
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const p = max > 0 ? window.scrollY / max : 0;
-        const hue = Math.round(p * 22) / 100; // 0 → 0.22, in steps so updates are rare
-        if (hue !== lastHue) {
-          strands.updateOptions({ hueShift: hue });
-          lastHue = hue;
-        }
-      };
-      gate();
-      window.addEventListener("scroll", gate, { passive: true });
+      resize();
+      if (reduced) {
+        sp = scrollP();
+        draw(12000);   // one static frame
+      } else {
+        start();
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) stop(); else start();
+        });
+      }
     })();
   </script>
 </body>
