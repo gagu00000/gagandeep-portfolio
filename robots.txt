@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# dev helper scripts — nothing for crawlers here
+Disallow: /fetch_ig.py
+Disallow: /fetch_ig.js
+Disallow: /move_chapter.py
+
+Sitemap: https://gagandeep-portfolio.vercel.app/sitemap.xml
