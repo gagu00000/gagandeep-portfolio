@@ -1,0 +1,7 @@
+# Development-only helpers; these should never be publicly deployed.
+fetch_ig.js
+fetch_ig.py
+move_chapter.py
+
+# Local tooling metadata.
+.claude/
