@@ -1056,6 +1056,9 @@
       height: 100%;
       object-fit: cover;
       object-position: top center;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
       transition: transform 0.7s var(--ease-out), filter 0.5s;
     }
 
@@ -1078,7 +1081,7 @@
     }
 
     .ai-project .card-link::after {
-      z-index: 3;
+      display: none;
     }
 
     .card-head {
@@ -2421,7 +2424,7 @@
           <div class="ai-slider" id="aiSlider" tabindex="0" aria-label="AI projects carousel">
             <article class="card ai-project">
               <div class="ai-project-preview">
-                <img src="img/projects/churn-dashboard.png" alt="Churn Analytics dashboard interface" loading="lazy" decoding="async" />
+                <img src="img/projects/churn-dashboard.png" alt="Churn Analytics dashboard interface" loading="lazy" decoding="async" draggable="false" />
               </div>
               <div class="ai-project-body">
                 <div class="card-head">
@@ -2438,7 +2441,7 @@
             </article>
             <article class="card ai-project">
               <div class="ai-project-preview">
-                <img src="img/projects/disaster-response.png" alt="ESARS multi-agent disaster response interface" loading="lazy" decoding="async" />
+                <img src="img/projects/disaster-response.png" alt="ESARS multi-agent disaster response interface" loading="lazy" decoding="async" draggable="false" />
               </div>
               <div class="ai-project-body">
                 <div class="card-head">
@@ -2455,7 +2458,7 @@
             </article>
             <article class="card ai-project">
               <div class="ai-project-preview">
-                <img src="img/projects/uae-pulse.png" alt="UAE Pulse retail analytics interface" loading="lazy" decoding="async" />
+                <img src="img/projects/uae-pulse.png" alt="UAE Pulse retail analytics interface" loading="lazy" decoding="async" draggable="false" />
               </div>
               <div class="ai-project-body">
                 <div class="card-head">
@@ -2472,7 +2475,7 @@
             </article>
             <article class="card ai-project">
               <div class="ai-project-preview">
-                <img src="img/projects/shortlistiq.png" alt="ShortlistIQ AI recruiter platform interface" loading="lazy" decoding="async" />
+                <img src="img/projects/shortlistiq.png" alt="ShortlistIQ AI recruiter platform interface" loading="lazy" decoding="async" draggable="false" />
               </div>
               <div class="ai-project-body">
                 <div class="card-head">
