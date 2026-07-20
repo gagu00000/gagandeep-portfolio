@@ -3048,7 +3048,6 @@
           aiDragAxis = e.pointerType === "mouse" ? "x" : "";
           aiDragStartIndex = aiClosestIndex();
           if (aiDragAxis === "x") aiSlider.classList.add("dragging");
-          aiSlider.setPointerCapture(e.pointerId);
         });
 
         aiSlider.addEventListener("pointermove", function (e) {
@@ -3058,13 +3057,13 @@
           if (!aiDragAxis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
             if (Math.abs(deltaY) > Math.abs(deltaX)) {
               aiDragging = false;
-              if (aiSlider.hasPointerCapture(e.pointerId)) aiSlider.releasePointerCapture(e.pointerId);
               return;
             }
             aiDragAxis = "x";
             aiSlider.classList.add("dragging");
           }
           if (aiDragAxis !== "x") return;
+          if (!aiSlider.hasPointerCapture(e.pointerId)) aiSlider.setPointerCapture(e.pointerId);
           if (Math.abs(deltaX) > 5) aiDragged = true;
           aiSlider.scrollLeft = aiDragScroll - deltaX;
         });
@@ -3084,7 +3083,7 @@
 
         aiSlider.addEventListener("pointerup", aiEndDrag);
         aiSlider.addEventListener("pointercancel", function (e) {
-          aiDragged = false;
+          aiDragged = true;
           aiEndDrag(e);
         });
         aiSlider.addEventListener("click", function (e) {
@@ -3093,6 +3092,16 @@
           e.stopPropagation();
           aiDragged = false;
         }, true);
+
+        // A normal click anywhere on a card launches its app. The capture
+        // handler above cancels this path after a real drag or swipe.
+        aiProjects.forEach(function (project) {
+          project.addEventListener("click", function (e) {
+            if (e.defaultPrevented || (e.target.closest && e.target.closest("a, button"))) return;
+            var launchLink = project.querySelector(".card-link[href]");
+            if (launchLink) window.location.assign(launchLink.href);
+          });
+        });
 
         aiUpdateControls();
       }
