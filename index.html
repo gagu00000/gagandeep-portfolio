@@ -3099,7 +3099,7 @@
           project.addEventListener("click", function (e) {
             if (e.defaultPrevented || (e.target.closest && e.target.closest("a, button"))) return;
             var launchLink = project.querySelector(".card-link[href]");
-            if (launchLink) window.location.assign(launchLink.href);
+            if (launchLink) launchLink.click();
           });
         });
 
