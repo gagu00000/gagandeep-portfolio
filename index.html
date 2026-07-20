@@ -2411,7 +2411,7 @@
           systems, and recruiting automation. Don&rsquo;t take my word for it: launch them.</p>
         <div class="ai-showcase reveal">
           <div class="ai-showcase-head">
-            <p class="ai-showcase-hint">Browse with arrows, drag, or swipe</p>
+            <p class="ai-showcase-hint">Click arrows, drag, or swipe — loops continuously</p>
             <div class="ai-slider-controls">
               <span class="ai-slider-count" id="aiSliderCount" aria-live="polite">01 / 04</span>
               <button class="ai-slider-btn" id="aiSliderPrev" type="button" aria-label="Previous AI project" disabled>←</button>
@@ -2983,7 +2983,10 @@
         var aiDragging = false;
         var aiDragged = false;
         var aiDragX = 0;
+        var aiDragY = 0;
         var aiDragScroll = 0;
+        var aiDragAxis = "";
+        var aiDragStartIndex = 0;
 
         function aiClosestIndex() {
           var railLeft = aiSlider.getBoundingClientRect().left;
@@ -2998,8 +3001,8 @@
 
         function aiUpdateControls() {
           aiIndex = aiClosestIndex();
-          aiSliderPrev.disabled = aiIndex === 0;
-          aiSliderNext.disabled = aiIndex === aiProjects.length - 1;
+          aiSliderPrev.disabled = false;
+          aiSliderNext.disabled = false;
           if (aiSliderCount) {
             aiSliderCount.textContent = String(aiIndex + 1).padStart(2, "0") + " / " +
               String(aiProjects.length).padStart(2, "0");
@@ -3007,7 +3010,7 @@
         }
 
         function aiGoTo(index) {
-          aiIndex = Math.max(0, Math.min(index, aiProjects.length - 1));
+          aiIndex = (index + aiProjects.length) % aiProjects.length;
           aiSlider.scrollTo({
             left: aiProjects[aiIndex].offsetLeft - aiProjects[0].offsetLeft,
             behavior: reducedMotion ? "auto" : "smooth"
@@ -3033,20 +3036,34 @@
         }, { passive: true });
 
         aiSlider.addEventListener("pointerdown", function (e) {
-          if (e.pointerType !== "mouse" || e.button !== 0) return;
+          if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0)) return;
           aiDragging = true;
           aiDragged = false;
           aiDragX = e.clientX;
+          aiDragY = e.clientY;
           aiDragScroll = aiSlider.scrollLeft;
-          aiSlider.classList.add("dragging");
+          aiDragAxis = e.pointerType === "mouse" ? "x" : "";
+          aiDragStartIndex = aiClosestIndex();
+          if (aiDragAxis === "x") aiSlider.classList.add("dragging");
           aiSlider.setPointerCapture(e.pointerId);
         });
 
         aiSlider.addEventListener("pointermove", function (e) {
           if (!aiDragging) return;
-          var delta = e.clientX - aiDragX;
-          if (Math.abs(delta) > 5) aiDragged = true;
-          aiSlider.scrollLeft = aiDragScroll - delta;
+          var deltaX = e.clientX - aiDragX;
+          var deltaY = e.clientY - aiDragY;
+          if (!aiDragAxis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+              aiDragging = false;
+              if (aiSlider.hasPointerCapture(e.pointerId)) aiSlider.releasePointerCapture(e.pointerId);
+              return;
+            }
+            aiDragAxis = "x";
+            aiSlider.classList.add("dragging");
+          }
+          if (aiDragAxis !== "x") return;
+          if (Math.abs(deltaX) > 5) aiDragged = true;
+          aiSlider.scrollLeft = aiDragScroll - deltaX;
         });
 
         function aiEndDrag(e) {
@@ -3054,11 +3071,19 @@
           aiDragging = false;
           aiSlider.classList.remove("dragging");
           if (aiSlider.hasPointerCapture(e.pointerId)) aiSlider.releasePointerCapture(e.pointerId);
-          aiGoTo(aiClosestIndex());
+          if (aiDragAxis === "x" && aiDragged && Math.abs(e.clientX - aiDragX) >= 45) {
+            aiGoTo(aiDragStartIndex + (e.clientX < aiDragX ? 1 : -1));
+          } else {
+            aiGoTo(aiClosestIndex());
+          }
+          aiDragAxis = "";
         }
 
         aiSlider.addEventListener("pointerup", aiEndDrag);
-        aiSlider.addEventListener("pointercancel", aiEndDrag);
+        aiSlider.addEventListener("pointercancel", function (e) {
+          aiDragged = false;
+          aiEndDrag(e);
+        });
         aiSlider.addEventListener("click", function (e) {
           if (!aiDragged) return;
           e.preventDefault();
